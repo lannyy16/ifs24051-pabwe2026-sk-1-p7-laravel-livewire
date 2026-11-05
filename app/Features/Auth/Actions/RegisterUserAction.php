@@ -1,1 +1,26 @@
-<?php namespace App\Features\Auth\Actions;use App\Models\User;class RegisterUserAction{public function execute(array $data):User{$data['role']='member';return User::create($data);}}
+<?php
+
+namespace App\Features\Auth\Actions;
+
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+
+class RegisterUserAction
+{
+    /** @param array{name:string, username:string, email:string, password:string} $data */
+    public function execute(array $data): User
+    {
+        $user = User::query()->create([
+            'name' => $data['name'],
+            'username' => $data['username'],
+            'email' => $data['email'],
+            'password' => $data['password'],
+            'role' => User::ROLE_MEMBER,
+        ]);
+
+        Auth::login($user);
+        session()->regenerate();
+
+        return $user;
+    }
+}

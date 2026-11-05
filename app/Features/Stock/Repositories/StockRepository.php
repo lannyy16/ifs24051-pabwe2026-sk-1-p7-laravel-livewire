@@ -1,3 +1,53 @@
-<?php namespace App\Features\Stock\Repositories;
-use App\Features\Stock\Contracts\StockRepositoryInterface;use App\Features\Stock\Models\Stock;use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-class StockRepository implements StockRepositoryInterface{public function paginateForUser(int $userId,string $search,string $status,int $perPage=10):LengthAwarePaginator{return Stock::where('user_id',$userId)->when($search,fn($q)=>$q->where(fn($x)=>$x->where('name','like',"%$search%")->orWhere('sku','like',"%$search%")))->when($status,fn($q)=>$q->where('status',$status))->latest()->paginate($perPage);}public function create(array $data):Stock{$s=Stock::create($data);$s->syncStatus();$s->save();return $s;}public function update(Stock $stock,array $data):Stock{$stock->fill($data);$stock->syncStatus();$stock->save();return $stock;}public function delete(Stock $stock):void{$stock->delete();}public function find(int $id):?Stock{return Stock::find($id);}}
+<?php
+
+namespace App\Features\Stock\Repositories;
+
+use App\Features\Stock\Contracts\StockRepositoryInterface;
+use App\Features\Stock\Models\Stock;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
+
+class StockRepository implements StockRepositoryInterface
+{
+    public function paginateForUser(int $userId, ?string $search, ?string $status, int $perPage = 10): LengthAwarePaginator
+    {
+        return Stock::query()
+            ->where('user_id', $userId)
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('sku', 'like', "%{$search}%");
+                });
+            })
+            ->when($status, fn ($query, $status) => $query->where('status', $status))
+            ->latest('id')
+            ->paginate($perPage);
+    }
+
+    public function allForUser(int $userId): Collection
+    {
+        return Stock::query()->where('user_id', $userId)->orderBy('name')->get();
+    }
+
+    public function findOrFail(int $id): Stock
+    {
+        return Stock::query()->findOrFail($id);
+    }
+
+    public function create(array $data): Stock
+    {
+        return Stock::query()->create($data);
+    }
+
+    public function update(Stock $stock, array $data): Stock
+    {
+        $stock->update($data);
+
+        return $stock->refresh();
+    }
+
+    public function delete(Stock $stock): void
+    {
+        $stock->delete();
+    }
+}

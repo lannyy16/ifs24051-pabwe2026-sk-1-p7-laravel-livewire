@@ -1,30 +1,48 @@
-# ifs24051-pabwe2026-sk-1 p7-laravel-livewire — Stock Barang
-Implementasi studi kasus P7 sesuai modul: Laravel 13, Livewire 4, MySQL, PhpSpreadsheet, feature-first.
+# Stock Barang — Laravel 13 + Livewire 4 (Feature-First)
 
-## Prasyarat
-PHP >= 8.3 + ekstensi `gd`, `zip`, `mbstring`, `pdo_mysql`, `pdo_sqlite`, Composer, Node/npm, MySQL.
-## Instalasi lokal (PowerShell)
-```powershell
+Studi kasus Praktikum PABWE 2026 (P7): aplikasi inventaris stok barang.
+Mengikuti pola latihan Todolist: Feature-First, Livewire, Auth, Profil, Admin read-only,
+Excel (PhpSpreadsheet), AI (OpenAI), PHPUnit 100% coverage, Jenkins.
+
+## Menjalankan
+
+```bash
 composer install
-Copy-Item .env.example .env
+cp .env.example .env          # lalu isi DB_* dan OPENAI_API_KEY
 php artisan key:generate
-# buat database pabwe_p7_stock di MySQL lalu sesuaikan DB_* di .env
-npm install
-npm run build
+mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS pabwe_p7_stock CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 php artisan storage:link
 php artisan migrate:fresh --seed
+npm install --ignore-scripts
+npm run build
 php artisan serve
 ```
-Buka http://127.0.0.1:8000
-- Admin: username `admin`, password `admin`
-- Member: username `member`, password `member`
-> Ganti password demo sebelum digunakan. Akun seed hanya untuk development.
 
-## Struktur
-`app/Features/{Admin,Ai,Auth,Profile,Stock}`; Stock terdiri atas Models, Enums, Contracts, Repositories, Services, Policies, Livewire.
-## Catatan
-- `.env` tidak disertakan.
-- `vendor/` dan `node_modules/` sengaja tidak disertakan; install melalui Composer/npm.
-- AI membutuhkan `OPENAI_API_KEY`; Excel membutuhkan ekstensi PHP `gd`, `zip`, `mbstring`.
-- Jalankan `composer test`. Target coverage 100% modul; test yang disertakan adalah baseline dan perlu diperluas sebelum gate Jenkins 100% terpenuhi.
-- Pastikan konfigurasi Jenkins credentials (URL_REDEPLOY, DEPLOY_TOKEN, WEBSITE_ID, URL_PROGRESS) tersedia di Jenkins environment.
+Akun seeder: `admin / admin` dan `member / member` (+ 5 contoh stok untuk member).
+
+## Pengujian
+
+```bash
+composer test               # tanpa coverage
+composer test:coverage      # coverage app/ wajib 100% (butuh pcov/xdebug)
+composer audit
+```
+
+## Catatan desain
+
+- **Status stok** dihitung otomatis dari `quantity` vs `min_stock`:
+  `0 → out_of_stock`, `≤ min_stock → low_stock`, selainnya `available`.
+- Admin hanya membaca (`/admin/users`, `/admin/users/{user}/stocks`); tidak ada aksi ubah/hapus.
+- Middleware: `role:member|admin`, `owns.stock`; Policy: `StockPolicy`.
+- Rate limit `1000-per-second`, `FORCE_HTTPS` lewat `.env`.
+- Form login memakai id `login-username`, `login-password`, `login-submit`.
+- Editor Markdown Toast UI dimuat dari CDN (butuh internet saat halaman detail dibuka).
+
+## CI/CD (Jenkins)
+
+`Jenkinsfile` memakai image `delcom-ci-php:8.5` (harus punya ext-gd, zip, pdo_sqlite, bcmath, exif + pcov/xdebug),
+`node:24-alpine`, `aquasec/trivy`, dan `curlimages/curl`. Tahapan: Checkout → Composer install + `composer audit`
+→ Build Vite → PHPUnit + gate coverage 100% (app/) → Trivy → Package `latest-app.zip` → Publish → Deploy.
+
+Variabel yang harus tersedia di Jenkins (Environment/Credentials job): `URL_REDEPLOY`, `URL_PROGRESS`,
+`DEPLOY_TOKEN`, `WEBSITE_ID`.

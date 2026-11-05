@@ -1,1 +1,17 @@
-<div class="card" style="max-width:500px;margin:2rem auto"><h1>Registrasi</h1><form wire:submit="register"><label>Nama</label><input class="input" wire:model="name"><label>Username</label><input class="input" wire:model="username"><label>Email</label><input class="input" wire:model="email" type="email"><label>Password</label><input class="input" wire:model="password" type="password"><label>Konfirmasi password</label><input class="input" wire:model="password_confirmation" type="password"><button class="btn" style="margin-top:1rem">Daftar</button></form><a href="/login">Kembali login</a></div>
+<div class="rounded-lg bg-white p-6 shadow">
+    <h1 class="mb-4 text-2xl font-bold">Daftar Akun</h1>
+
+    <form wire:submit="submit" class="space-y-3">
+        @foreach ([['name','Nama lengkap','text'],['username','Username','text'],['email','Email','email'],['password','Password','password'],['password_confirmation','Konfirmasi password','password']] as [$field,$label,$type])
+            <div>
+                <label for="register-{{ $field }}" class="block text-sm font-medium">{{ $label }}</label>
+                <input id="register-{{ $field }}" type="{{ $type }}" wire:model="{{ $field }}"
+                       class="mt-1 w-full rounded border border-slate-300 px-3 py-2">
+                @error($field) <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            </div>
+        @endforeach
+        <button id="register-submit" type="submit" class="w-full rounded bg-slate-900 px-4 py-2 text-white hover:bg-slate-700">Daftar</button>
+    </form>
+
+    <p class="mt-4 text-center text-sm">Sudah punya akun? <a href="{{ route('login') }}" class="text-blue-600 underline">Masuk</a></p>
+</div>
