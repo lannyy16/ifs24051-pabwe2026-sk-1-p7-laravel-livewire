@@ -1,0 +1,3 @@
+<?php namespace App\Features\Stock\Services;
+use App\Features\Stock\Contracts\StockRepositoryInterface;use App\Features\Stock\Models\Stock;
+class StockService{public function __construct(private StockRepositoryInterface $repo){}public function create(int $userId,array $data):Stock{$data['user_id']=$userId;return $this->repo->create($data);}public function update(Stock $stock,array $data):Stock{return $this->repo->update($stock,$data);}public function adjust(Stock $stock,int $amount):Stock{$stock->adjust($amount);return $stock;}public function delete(Stock $stock):void{$this->repo->delete($stock);}}

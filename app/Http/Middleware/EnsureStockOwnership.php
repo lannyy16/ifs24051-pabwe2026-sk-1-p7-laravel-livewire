@@ -1,0 +1,1 @@
+<?php namespace App\Http\Middleware;use Closure;use Illuminate\Http\Request;class EnsureStockOwnership{public function handle(Request $request,Closure $next){$stock=$request->route('stock');if($stock&&$request->user()->role!=='admin'&&(int)$stock->user_id!==(int)$request->user()->id)abort(403);return $next($request);}}

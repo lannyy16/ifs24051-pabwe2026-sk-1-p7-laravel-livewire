@@ -1,0 +1,1 @@
+<?php namespace App\Features\Admin\Livewire;use Livewire\Component;use App\Features\Admin\Services\AdminUserService;class UserList extends Component{public function render(){return view('livewire.admin.user-list',['users'=>app(AdminUserService::class)->users()])->layout('components.layouts.app');}}

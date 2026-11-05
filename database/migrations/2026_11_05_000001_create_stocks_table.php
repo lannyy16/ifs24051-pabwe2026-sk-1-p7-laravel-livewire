@@ -1,0 +1,3 @@
+<?php
+use Illuminate\Database\Migrations\Migration;use Illuminate\Database\Schema\Blueprint;use Illuminate\Support\Facades\Schema;
+return new class extends Migration {public function up():void{Schema::create('stocks',function(Blueprint $t){$t->id();$t->foreignId('user_id')->constrained()->cascadeOnDelete();$t->string('name');$t->string('sku')->nullable()->unique();$t->text('description')->nullable();$t->unsignedInteger('quantity')->default(0);$t->string('unit')->default('pcs');$t->decimal('price',14,2)->nullable();$t->unsignedInteger('min_stock')->default(5);$t->string('status')->default('available');$t->string('cover_image_path')->nullable();$t->timestamps();});};public function down():void{Schema::dropIfExists('stocks');}};

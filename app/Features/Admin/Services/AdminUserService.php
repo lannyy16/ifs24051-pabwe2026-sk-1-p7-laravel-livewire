@@ -1,0 +1,1 @@
+<?php namespace App\Features\Admin\Services;use App\Models\User;class AdminUserService{public function users(){return User::withCount('stocks')->orderBy('name')->paginate(15);}public function stocksFor(User $user){return $user->stocks()->latest()->paginate(10);}}

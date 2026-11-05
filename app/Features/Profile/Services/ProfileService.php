@@ -1,0 +1,1 @@
+<?php namespace App\Features\Profile\Services;use App\Models\User;use Illuminate\Support\Facades\Hash;class ProfileService{public function update(User $user,array $data):User{if(isset($data['password'])&&$data['password'])$data['password']=Hash::make($data['password']);else unset($data['password']);$user->update($data);return $user;}}
