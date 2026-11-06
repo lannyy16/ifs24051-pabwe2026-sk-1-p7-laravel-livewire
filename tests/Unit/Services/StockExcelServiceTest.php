@@ -141,16 +141,52 @@ class StockExcelServiceTest extends TestCase
     }
 
     public function test_import_rejects_missing_file(): void
-{
-    $path = sys_get_temp_dir()
-        . DIRECTORY_SEPARATOR
-        . 'missing-excel-'
-        . uniqid()
-        . '.xlsx';
+    {
+        $path = sys_get_temp_dir()
+            . DIRECTORY_SEPARATOR
+            . 'missing-excel-'
+            . uniqid()
+            . '.xlsx';
 
-    $this->expectException(\ErrorException::class);
-    $this->expectExceptionMessage('Failed to open stream');
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage(
+            'File Excel tidak dapat dibuka.'
+        );
 
-    (new StockExcelService)->import($path);
-}
+        (new StockExcelService)->import($path);
+    }
+
+    public function test_template_throws_when_temporary_file_cannot_be_created(): void
+    {
+        $service = new class extends StockExcelService {
+            protected function createTemporaryFile(): string|false
+            {
+                return false;
+            }
+        };
+
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage(
+            'Gagal membuat file sementara.'
+        );
+
+        $service->template();
+    }
+
+    public function test_template_throws_when_temporary_file_cannot_be_read(): void
+    {
+        $service = new class extends StockExcelService {
+            protected function readTemporaryFile(string $path): string|false
+            {
+                return false;
+            }
+        };
+
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage(
+            'Gagal membaca file Excel.'
+        );
+
+        $service->template();
+    }
 }

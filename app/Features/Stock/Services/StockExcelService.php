@@ -22,7 +22,11 @@ class StockExcelService
         'description',
     ];
 
-    /** @param Collection<int, Stock> $stocks */
+    /**
+     * Export data stok ke file Excel.
+     *
+     * @param Collection<int, Stock> $stocks
+     */
     public function export(Collection $stocks): string
     {
         $rows = $stocks->map(fn (Stock $stock) => [
@@ -39,6 +43,9 @@ class StockExcelService
         return $this->build($rows);
     }
 
+    /**
+     * Membuat template Excel.
+     */
     public function template(): string
     {
         return $this->build([
@@ -55,9 +62,38 @@ class StockExcelService
         ]);
     }
 
+    /**
+     * Membuka file Excel.
+     *
+     * @return resource|false
+     */
+    protected function openExcelFile(string $path): mixed
+    {
+        return @fopen($path, 'rb');
+    }
+
+    /**
+     * Membuat file sementara.
+     */
+    protected function createTemporaryFile(): string|false
+    {
+        return tempnam(sys_get_temp_dir(), 'stk');
+    }
+
+    /**
+     * Membaca isi file sementara.
+     */
+    protected function readTemporaryFile(string $path): string|false
+    {
+        return file_get_contents($path);
+    }
+
+    /**
+     * Memastikan file memiliki signature Excel yang valid.
+     */
     private function assertExcelFile(string $path): void
     {
-        $file = fopen($path, 'rb');
+        $file = $this->openExcelFile($path);
 
         if ($file === false) {
             throw new UnexpectedValueException(
@@ -84,6 +120,8 @@ class StockExcelService
     }
 
     /**
+     * Import data dari file Excel.
+     *
      * @return array<int, array<string, mixed>>
      */
     public function import(string $path): array
@@ -101,6 +139,7 @@ class StockExcelService
                 array_shift($data) ?? []
             );
 
+            // Mendukung nama kolom qty sebagai alias quantity.
             $header = array_map(
                 fn ($value) => $value === 'qty' ? 'quantity' : $value,
                 $header
@@ -115,6 +154,7 @@ class StockExcelService
                     $row[$key] = $line[$index] ?? null;
                 }
 
+                // Lewati baris yang tidak memiliki nama barang.
                 if (trim((string) ($row['name'] ?? '')) === '') {
                     continue;
                 }
@@ -137,6 +177,8 @@ class StockExcelService
     }
 
     /**
+     * Membuat konten file Excel.
+     *
      * @param array<int, array<int, mixed>> $rows
      */
     private function build(array $rows): string
@@ -146,6 +188,7 @@ class StockExcelService
         try {
             $sheet = $spreadsheet->getActiveSheet();
             $sheet->setTitle('Stok');
+
             $sheet->fromArray(self::HEADERS, null, 'A1');
             $sheet->getStyle('A1:H1')->getFont()->setBold(true);
 
@@ -157,7 +200,7 @@ class StockExcelService
                 $sheet->getColumnDimension($column)->setAutoSize(true);
             }
 
-            $tmp = tempnam(sys_get_temp_dir(), 'stk');
+            $tmp = $this->createTemporaryFile();
 
             if ($tmp === false) {
                 throw new UnexpectedValueException(
@@ -168,7 +211,7 @@ class StockExcelService
             try {
                 (new Xlsx($spreadsheet))->save($tmp);
 
-                $content = file_get_contents($tmp);
+                $content = $this->readTemporaryFile($tmp);
 
                 if ($content === false) {
                     throw new UnexpectedValueException(
