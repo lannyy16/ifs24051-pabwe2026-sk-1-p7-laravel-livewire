@@ -3,18 +3,41 @@
 namespace App\Features\Auth\Actions;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 
 class LoginUserAction
 {
-    public function execute(string $login, string $password, bool $remember = false): bool
-    {
-        $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+    public function execute(
+        string $login,
+        string $password,
+        bool $remember = false
+    ): bool {
+        $login = trim($login);
 
-        if (! Auth::attempt([$field => $login, 'password' => $password], $remember)) {
+        $field = filter_var($login, FILTER_VALIDATE_EMAIL)
+            ? 'email'
+            : 'username';
+
+        $throttleKey = Str::lower($login) . '|' . request()->ip();
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
             return false;
         }
 
-        session()->regenerate();
+        $credentials = [
+            $field => $login,
+            'password' => $password,
+        ];
+
+        if (!Auth::attempt($credentials, $remember)) {
+            RateLimiter::hit($throttleKey, 60);
+            return false;
+        }
+
+        RateLimiter::clear($throttleKey);
+
+        request()->session()->regenerate();
 
         return true;
     }
