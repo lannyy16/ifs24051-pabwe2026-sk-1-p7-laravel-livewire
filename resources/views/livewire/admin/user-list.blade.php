@@ -6,7 +6,7 @@
 
     <div class="overflow-x-auto rounded bg-white shadow">
         <table class="w-full text-left text-sm">
-            <thead class="bg-slate-50 text-xs uppercase text-slate-500">
+            <thead class="bg-slate-50 text-xs uppercase text-slate-600">
             <tr><th class="px-3 py-2">Nama</th><th class="px-3 py-2">Username</th><th class="px-3 py-2">Email</th>
                 <th class="px-3 py-2">Role</th><th class="px-3 py-2 text-center">Jumlah stok</th><th class="px-3 py-2"></th></tr>
             </thead>

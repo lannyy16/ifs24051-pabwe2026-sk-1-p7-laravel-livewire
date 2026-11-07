@@ -39,7 +39,7 @@
                 <div class="flex gap-3 text-sm">
                     <a href="{{ auth()->user()->isAdmin() ? route('admin.users') : route('stocks.index') }}" class="underline">Beranda</a>
                     <a href="{{ route('profile') }}" class="underline">Profil</a>
-                    <form method="POST" action="{{ route('logout') }}">@csrf<button class="underline text-red-600">Keluar</button></form>
+                    <form method="POST" action="{{ route('logout') }}">@csrf<button class="underline text-red-700">Keluar</button></form>
                 </div>
             </div>
             {{ $slot }}

@@ -15,7 +15,7 @@
             <form wire:submit="saveCover" class="space-y-2 text-sm">
                 <label for="cover-file" class="sr-only">Pilih gambar cover</label>
                 <input id="cover-file" type="file" wire:model="cover" accept="image/*">
-                @error('cover') <p class="text-red-600">{{ $message }}</p> @enderror
+                @error('cover') <p class="text-red-700">{{ $message }}</p> @enderror
                 <div class="flex gap-2">
                     <button type="submit" class="rounded bg-slate-800 px-3 py-1 text-white">Unggah cover</button>
                     @if ($stock->cover_image_path)
@@ -29,23 +29,23 @@
             <div class="flex items-start justify-between">
                 <div>
                     <h1 class="text-2xl font-bold">{{ $stock->name }}</h1>
-                    <p class="text-sm text-slate-500">SKU: {{ $stock->sku ?? '-' }}</p>
+                    <p class="text-sm text-slate-600">SKU: {{ $stock->sku ?? '-' }}</p>
                 </div>
                 <span class="rounded-full px-3 py-1 text-xs {{ $stock->status->badgeClass() }}">{{ $stock->status->label() }}</span>
             </div>
 
             <div class="grid grid-cols-3 gap-3 text-sm">
                 <div class="rounded bg-slate-50 p-3">
-                    <div class="text-xs text-slate-500">Quantity</div>
+                    <div class="text-xs text-slate-600">Quantity</div>
                     <div class="mt-1 flex items-center gap-2 text-lg font-semibold">
-                        <button wire:click="adjust(-1)" class="h-7 w-7 rounded bg-slate-200 hover:bg-slate-300">−</button>
+                        <button wire:click="adjust(-1)" aria-label="Kurangi jumlah" class="h-7 w-7 rounded bg-slate-200 hover:bg-slate-300">−</button>
                         {{ $stock->quantity }} {{ $stock->unit }}
-                        <button wire:click="adjust(1)" class="h-7 w-7 rounded bg-slate-200 hover:bg-slate-300">+</button>
+                        <button wire:click="adjust(1)" aria-label="Tambah jumlah" class="h-7 w-7 rounded bg-slate-200 hover:bg-slate-300">+</button>
                     </div>
                 </div>
-                <div class="rounded bg-slate-50 p-3"><div class="text-xs text-slate-500">Harga</div>
+                <div class="rounded bg-slate-50 p-3"><div class="text-xs text-slate-600">Harga</div>
                     <div class="text-lg font-semibold">{{ $stock->price !== null ? 'Rp '.number_format((float) $stock->price, 0, ',', '.') : '-' }}</div></div>
-                <div class="rounded bg-slate-50 p-3"><div class="text-xs text-slate-500">Stok minimum</div>
+                <div class="rounded bg-slate-50 p-3"><div class="text-xs text-slate-600">Stok minimum</div>
                     <div class="text-lg font-semibold">{{ $stock->min_stock }}</div></div>
             </div>
 
@@ -56,7 +56,7 @@
                         {!! \Illuminate\Support\Str::markdown($stock->description, ['html_input' => 'strip', 'allow_unsafe_links' => false]) !!}
                     </div>
                 @else
-                    <p class="text-sm text-slate-500">Belum ada deskripsi.</p>
+                    <p class="text-sm text-slate-600">Belum ada deskripsi.</p>
                 @endif
             </div>
 
@@ -69,14 +69,14 @@
                 <div>
                     <label for="detail-name" class="block text-sm font-medium">Nama</label>
                     <input id="detail-name" type="text" wire:model="name" class="w-full rounded border border-slate-300 px-3 py-2">
-                    @error('name') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                    @error('name') <p class="text-sm text-red-700">{{ $message }}</p> @enderror
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     @foreach ([['sku','SKU','text'],['unit','Satuan','text'],['quantity','Quantity','number'],['min_stock','Stok minimum','number'],['price','Harga (Rp)','number']] as [$f,$l,$t])
                         <div>
                             <label for="detail-{{ $f }}" class="block text-sm font-medium">{{ $l }}</label>
                             <input id="detail-{{ $f }}" type="{{ $t }}" @if($t==='number') min="0" step="any" @endif wire:model="{{ $f }}" class="w-full rounded border border-slate-300 px-3 py-2">
-                            @error($f) <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                            @error($f) <p class="text-sm text-red-700">{{ $message }}</p> @enderror
                         </div>
                     @endforeach
                 </div>
@@ -97,7 +97,7 @@
                          ">
                         <div x-ref="editorEl"></div>
                     </div>
-                    @error('description') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                    @error('description') <p class="text-sm text-red-700">{{ $message }}</p> @enderror
                 </div>
 
                 <div class="flex gap-2">

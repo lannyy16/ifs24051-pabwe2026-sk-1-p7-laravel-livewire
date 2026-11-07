@@ -16,7 +16,7 @@
             <form wire:submit="savePhoto" class="space-y-2 text-sm">
                 <label for="profile-photo" class="sr-only">Pilih foto profil</label>
                 <input id="profile-photo" type="file" wire:model="photo" accept="image/*">
-                @error('photo') <p class="text-red-600">{{ $message }}</p> @enderror
+                @error('photo') <p class="text-red-700">{{ $message }}</p> @enderror
                 <div class="flex gap-2">
                     <button class="rounded bg-slate-800 px-3 py-1 text-white">Unggah</button>
                     @if ($user->profile_photo_path)
@@ -34,7 +34,7 @@
                 <div>
                     <label for="profile-{{ $f }}" class="block text-sm font-medium">{{ $l }}</label>
                     <input id="profile-{{ $f }}" type="{{ $t }}" wire:model="{{ $f }}" class="w-full rounded border border-slate-300 px-3 py-2">
-                    @error($f) <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                    @error($f) <p class="text-sm text-red-700">{{ $message }}</p> @enderror
                 </div>
             @endforeach
             <button class="rounded bg-blue-600 px-4 py-2 text-white">Simpan</button>
@@ -48,7 +48,7 @@
                 <div>
                     <label for="profile-{{ $f }}" class="block text-sm font-medium">{{ $l }}</label>
                     <input id="profile-{{ $f }}" type="password" wire:model="{{ $f }}" class="w-full rounded border border-slate-300 px-3 py-2">
-                    @error($f) <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                    @error($f) <p class="text-sm text-red-700">{{ $message }}</p> @enderror
                 </div>
             @endforeach
             <button class="rounded bg-blue-600 px-4 py-2 text-white">Ubah password</button>
