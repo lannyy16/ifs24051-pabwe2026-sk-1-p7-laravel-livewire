@@ -13,7 +13,8 @@
                 <div class="flex h-32 w-32 items-center justify-center rounded bg-slate-100 text-4xl">📦</div>
             @endif
             <form wire:submit="saveCover" class="space-y-2 text-sm">
-                <input type="file" wire:model="cover" accept="image/*">
+                <label for="cover-file" class="sr-only">Pilih gambar cover</label>
+                <input id="cover-file" type="file" wire:model="cover" accept="image/*">
                 @error('cover') <p class="text-red-600">{{ $message }}</p> @enderror
                 <div class="flex gap-2">
                     <button type="submit" class="rounded bg-slate-800 px-3 py-1 text-white">Unggah cover</button>
@@ -61,28 +62,28 @@
 
             <div class="flex gap-2">
                 <button wire:click="startEdit" id="btn-edit" class="rounded bg-blue-600 px-4 py-2 text-white">Edit</button>
-                <button wire:click="delete" wire:confirm="Hapus stok ini?" class="rounded bg-red-600 px-4 py-2 text-white">Hapus</button>
+                <button wire:click="delete" wire:confirm="Hapus stok ini?" class="rounded bg-red-700 px-4 py-2 text-white hover:bg-red-800">Hapus</button>
             </div>
         @else
             <form wire:submit="save" class="space-y-3">
                 <div>
-                    <label class="block text-sm font-medium">Nama</label>
-                    <input type="text" wire:model="name" class="w-full rounded border border-slate-300 px-3 py-2">
+                    <label for="detail-name" class="block text-sm font-medium">Nama</label>
+                    <input id="detail-name" type="text" wire:model="name" class="w-full rounded border border-slate-300 px-3 py-2">
                     @error('name') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     @foreach ([['sku','SKU','text'],['unit','Satuan','text'],['quantity','Quantity','number'],['min_stock','Stok minimum','number'],['price','Harga (Rp)','number']] as [$f,$l,$t])
                         <div>
-                            <label class="block text-sm font-medium">{{ $l }}</label>
-                            <input type="{{ $t }}" @if($t==='number') min="0" step="any" @endif wire:model="{{ $f }}" class="w-full rounded border border-slate-300 px-3 py-2">
+                            <label for="detail-{{ $f }}" class="block text-sm font-medium">{{ $l }}</label>
+                            <input id="detail-{{ $f }}" type="{{ $t }}" @if($t==='number') min="0" step="any" @endif wire:model="{{ $f }}" class="w-full rounded border border-slate-300 px-3 py-2">
                             @error($f) <p class="text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
                     @endforeach
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium">Deskripsi (Markdown)</label>
-                    <div wire:ignore
+                    <span id="detail-description-label" class="block text-sm font-medium">Deskripsi (Markdown)</span>
+                    <div wire:ignore role="group" aria-labelledby="detail-description-label"
                          x-data="{ editor: null }"
                          x-init="
                             editor = new toastui.Editor({

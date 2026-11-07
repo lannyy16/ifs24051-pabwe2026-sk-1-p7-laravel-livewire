@@ -2,6 +2,14 @@
 :{$PORT:80} {
     root * /app/public
 
+    # Cache jangka panjang untuk aset Vite yang nama filenya ber-hash (immutable)
+    @hashed_assets path /build/assets/* /build/fonts/*
+    header @hashed_assets Cache-Control "public, max-age=31536000, immutable"
+
+    # Aset statis lain di public/ (favicon, robots) - cache singkat
+    @static_misc path /favicon.ico /favicon.svg /robots.txt
+    header @static_misc Cache-Control "public, max-age=86400"
+
     encode zstd gzip
 
     php_server {

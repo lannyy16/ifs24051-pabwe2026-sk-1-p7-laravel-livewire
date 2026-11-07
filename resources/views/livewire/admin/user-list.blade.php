@@ -2,7 +2,7 @@
     <h1 class="mb-4 text-2xl font-bold">👥 Daftar User</h1>
 
     <input type="search" wire:model.live.debounce.300ms="search" placeholder="Cari nama / username / email…"
-           class="mb-4 w-72 rounded border border-slate-300 px-3 py-2 text-sm">
+           aria-label="Cari nama, username, atau email" class="mb-4 w-72 rounded border border-slate-300 px-3 py-2 text-sm">
 
     <div class="overflow-x-auto rounded bg-white shadow">
         <table class="w-full text-left text-sm">

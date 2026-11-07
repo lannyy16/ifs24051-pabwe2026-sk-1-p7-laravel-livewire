@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
+use Livewire\Livewire;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -28,6 +29,10 @@ class AppServiceProvider extends ServiceProvider
         if (config('app.force_https')) {
             URL::forceScheme('https');
         }
+
+        // Jangan blokir render pertama: muat livewire.min.js dengan defer.
+        // (Skrip defer tetap dieksekusi sebelum DOMContentLoaded, jadi Livewire/Alpine aman.)
+        Livewire::useScriptTagAttributes(['defer' => 'defer']);
 
         Gate::policy(Stock::class, StockPolicy::class);
 
